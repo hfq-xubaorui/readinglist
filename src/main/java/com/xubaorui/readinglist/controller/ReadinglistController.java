@@ -1,6 +1,7 @@
 package com.xubaorui.readinglist.controller;
 
 import com.xubaorui.readinglist.entity.Book;
+import com.xubaorui.readinglist.properties.AmazonProperties;
 import com.xubaorui.readinglist.repository.ReadinglistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,18 +15,24 @@ import java.util.List;
 @Controller
 @RequestMapping("/readingList")
 public class ReadinglistController {
+    private AmazonProperties amazonProperties;
 
     ReadinglistRepository readinglistRepository;
     @Autowired
-    public ReadinglistController(ReadinglistRepository readinglistRepository){
+    public ReadinglistController(ReadinglistRepository readinglistRepository, AmazonProperties amazonProperties){
         this.readinglistRepository = readinglistRepository;
+        this.amazonProperties = amazonProperties;
+
     }
+
 
     @RequestMapping(value = "/{reader}", method = RequestMethod.GET)
     public String readersBooks(@PathVariable("reader") String reader, Model model) {
         List<Book> readingList = readinglistRepository.findByReader(reader);
         if (readingList != null) {
             model.addAttribute("books", readingList);
+            model.addAttribute("reader",reader);
+            model.addAttribute("amazonID",amazonProperties.getAssociateId());
         }
         return "readingList";
     }
